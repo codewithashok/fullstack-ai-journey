@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Table, Typography, Button, Modal, Form, Input, InputNumber, Popconfirm, Space, message } from 'antd'
+import { Table, Typography, Button, Modal, Form, Input, Popconfirm, Space, message } from 'antd'
 import 'antd/dist/reset.css'
 
 const { Title } = Typography
@@ -32,7 +32,7 @@ function App() {
 
   const openEditModal = (user) => {
     setEditingUser(user)
-    form.setFieldsValue({ name: user.name, age: user.age })
+    form.setFieldsValue({ name: user.name, email: user.email })
     setModalOpen(true)
   }
 
@@ -76,7 +76,7 @@ function App() {
 
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Age', dataIndex: 'age', key: 'age', render: age => age ?? '—' },
+    { title: 'Email', dataIndex: 'email', key: 'email' },
     { title: 'ID', dataIndex: 'id', key: 'id' },
     {
       title: 'Actions',
@@ -125,8 +125,15 @@ function App() {
           >
             <Input placeholder="Enter name" />
           </Form.Item>
-          <Form.Item name="age" label="Age">
-            <InputNumber min={0} placeholder="Enter age" style={{ width: '100%' }} />
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: 'Email is required' },
+              { type: 'email', message: 'Enter a valid email' },
+            ]}
+          >
+            <Input placeholder="Enter email" />
           </Form.Item>
         </Form>
       </Modal>
