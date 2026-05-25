@@ -32,7 +32,7 @@ function App() {
 
   const openEditModal = (user) => {
     setEditingUser(user)
-    form.setFieldsValue({ name: user.name, email: user.email })
+    form.setFieldsValue({ name: user.name, email: user.email, city: user.city })
     setModalOpen(true)
   }
 
@@ -77,6 +77,7 @@ function App() {
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
+    { title: 'City', dataIndex: 'city', key: 'city' },
     { title: 'ID', dataIndex: 'id', key: 'id' },
     {
       title: 'Actions',
@@ -134,6 +135,13 @@ function App() {
             ]}
           >
             <Input placeholder="Enter email" />
+          </Form.Item>
+          <Form.Item
+            name="city"
+            label="City"
+            rules={[{ required: true, message: 'City is required' }]}
+          >
+            <Input placeholder="Enter city" />
           </Form.Item>
         </Form>
       </Modal>
