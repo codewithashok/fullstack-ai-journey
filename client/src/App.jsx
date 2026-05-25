@@ -3,7 +3,7 @@ import { Table, Typography, Button, Modal, Form, Input, Popconfirm, Space, messa
 import 'antd/dist/reset.css'
 
 const { Title } = Typography
-const API = 'http://localhost:4000/users'
+const API = 'https://users-app-backend-ogle.onrender.com/users'
 
 function App() {
   const [users, setUsers] = useState([])
