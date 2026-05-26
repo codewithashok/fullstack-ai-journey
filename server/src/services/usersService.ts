@@ -16,16 +16,16 @@ const fetchUserById = async (userId: string) => {
 
 const addUser = async (user: User) => {
     const result = await pool.query(
-        'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-        [user.name, user.email]
+        'INSERT INTO users (name, email, city) VALUES ($1, $2, $3) RETURNING *',
+        [user.name, user.email, user.city]
     );
     return result.rows[0];
 }
 
 const updateUser = async (userId: string, updatedData: Partial<User>) => {
     const result = await pool.query(
-        'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *',
-        [updatedData.name, updatedData.email, userId]
+        'UPDATE users SET name = $1, email = $2, city = $3 WHERE id = $4 RETURNING *',
+        [updatedData.name, updatedData.email, updatedData.city, userId]
     );
     return result.rows[0];
 }
