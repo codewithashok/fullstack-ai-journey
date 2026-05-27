@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Table, Typography, Button, Modal, Form, Input, Popconfirm, Space, message } from 'antd'
+import { Table, Typography, Button, Modal, Form, Input, Popconfirm, Space, message, Upload } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
 import 'antd/dist/reset.css'
 
 const { Title } = Typography
-const API = 'https://users-app-backend-ogle.onrender.com/users'
+const BASE_URL = import.meta.env.VITE_API_URL
+const API = `${BASE_URL}/users`
+const UPLOAD_API = `${BASE_URL}/upload`
 
 function App() {
   const [users, setUsers] = useState([])
@@ -11,6 +14,7 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [photoUrl, setPhotoUrl] = useState(null)
   const [form] = Form.useForm()
 
   const fetchUsers = () => {
@@ -26,32 +30,52 @@ function App() {
 
   const openCreateModal = () => {
     setEditingUser(null)
+    setPhotoUrl(null)
     form.resetFields()
     setModalOpen(true)
   }
 
   const openEditModal = (user) => {
     setEditingUser(user)
+    setPhotoUrl(user.profile_photo || null)
     form.setFieldsValue({ name: user.name, email: user.email, city: user.city })
     setModalOpen(true)
+  }
+
+  const handleUpload = async ({ file, onSuccess, onError }) => {
+    const formData = new FormData()
+    formData.append('image', file)
+
+    try {
+      const res = await fetch(UPLOAD_API, { method: 'POST', body: formData })
+      const data = await res.json()
+      setPhotoUrl(data.url)
+      onSuccess(data)
+      message.success('Photo uploaded')
+    } catch {
+      onError(new Error('Upload failed'))
+      message.error('Photo upload failed')
+    }
   }
 
   const handleSave = async () => {
     const values = await form.validateFields()
     setSaving(true)
     try {
+      const payload = { ...values, profile_photo: photoUrl }
+
       if (editingUser) {
         await fetch(`${API}/${editingUser.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
+          body: JSON.stringify(payload),
         })
         message.success('User updated')
       } else {
         await fetch(API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
+          body: JSON.stringify(payload),
         })
         message.success('User created')
       }
@@ -75,6 +99,14 @@ function App() {
   }
 
   const columns = [
+    {
+      title: 'Photo',
+      dataIndex: 'profile_photo',
+      key: 'profile_photo',
+      render: (url) => url
+        ? <img src={url} alt="profile" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
+        : '—'
+    },
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
     { title: 'City', dataIndex: 'city', key: 'city' },
@@ -142,6 +174,14 @@ function App() {
             rules={[{ required: true, message: 'City is required' }]}
           >
             <Input placeholder="Enter city" />
+          </Form.Item>
+          <Form.Item label="Profile Photo">
+            {photoUrl && (
+              <img src={photoUrl} alt="preview" style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', marginBottom: 8, display: 'block' }} />
+            )}
+            <Upload customRequest={handleUpload} showUploadList={false} accept="image/*">
+              <Button icon={<UploadOutlined />}>Upload Photo</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>
