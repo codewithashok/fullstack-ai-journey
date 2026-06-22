@@ -11,10 +11,14 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
         return;
     }
 
-    const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-    const result = await cloudinary.uploader.upload(base64, { folder: 'users' });
-
-    res.json({ url: result.secure_url });
+    try {
+        const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+        const result = await cloudinary.uploader.upload(base64, { folder: 'users' });
+        res.json({ url: result.secure_url });
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        res.status(500).json({ message: 'Image upload failed' });
+    }
 });
 
 export default router;
