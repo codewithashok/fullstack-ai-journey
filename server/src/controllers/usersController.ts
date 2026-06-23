@@ -7,7 +7,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 }
 
 const getUserById = async (req: Request<{ id: string }>, res: Response) => {
-    const userId = req.params.id;
+    const userId = Number(req.params.id);
     const user = await fetchUserById(userId);
     if (user) {
         res.send(user);
@@ -23,14 +23,14 @@ const createUser = async (req: Request, res: Response) => {
 }
 
 const updateUser = async (req: Request<{ id: string }>, res: Response) => {
-    const userId = req.params.id;
+    const userId = Number(req.params.id);
     const updatedData = req.body;
     const updatedUser = await updateUserById(userId, updatedData);
     res.send(updatedUser);
 }
 
 const deleteUser = async (req: Request<{ id: string }>, res: Response) => {
-    const userId = req.params.id;
+    const userId = Number(req.params.id);
     const deletedUser = await deleteUserById(userId);
     res.send(deletedUser);
 }

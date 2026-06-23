@@ -1,15 +1,15 @@
 import { z } from 'zod';
 import { pool } from '../config/db.js';
-import userSchema from '../schemas/userSchema.js';
+import { createUserSchema } from '../schemas/userSchema.js';
 
-type User = z.infer<typeof userSchema>;
+type User = z.infer<typeof createUserSchema>;
 
 const fetchAllUsers = async () => {
     const result = await pool.query('SELECT * FROM users');
     return result.rows;
 }
 
-const fetchUserById = async (userId: string) => {
+const fetchUserById = async (userId: number) => {
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
     return result.rows[0];
 }
@@ -22,7 +22,7 @@ const addUser = async (user: User) => {
     return result.rows[0];
 }
 
-const updateUser = async (userId: string, updatedData: User) => {
+const updateUser = async (userId: number, updatedData: User) => {
     const result = await pool.query(
         'UPDATE users SET name = $1, email = $2, city = $3, profile_photo = $4 WHERE id = $5 RETURNING *',
         [updatedData.name, updatedData.email, updatedData.city, updatedData.profile_photo ?? null, userId]
@@ -30,7 +30,7 @@ const updateUser = async (userId: string, updatedData: User) => {
     return result.rows[0];
 }
 
-const deleteUser = async (userId: string) => {
+const deleteUser = async (userId: number) => {
     const result = await pool.query(
         'DELETE FROM users WHERE id = $1 RETURNING *',
         [userId]
