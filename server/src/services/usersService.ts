@@ -22,7 +22,7 @@ const addUser = async (user: User) => {
     return result.rows[0];
 }
 
-const updateUser = async (userId: string, updatedData: Partial<User>) => {
+const updateUser = async (userId: string, updatedData: User) => {
     const result = await pool.query(
         'UPDATE users SET name = $1, email = $2, city = $3, profile_photo = $4 WHERE id = $5 RETURNING *',
         [updatedData.name, updatedData.email, updatedData.city, updatedData.profile_photo ?? null, userId]

@@ -9,12 +9,6 @@ export const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-pool.connect()
-  .then(() => {
-    console.log('\n');
-    console.log('<< << << ===== :: Database connected successfully :: ===== >> >> >>');
-    console.log('\n');
-  })
-  .catch(error => {
-    console.error('Database connection failed', error);
-  });
+pool.query('SELECT NOW()')
+  .then(() => console.log('Database connected'))
+  .catch(error => console.error('Database connection failed', error));
