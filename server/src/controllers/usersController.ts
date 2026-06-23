@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import usersService from '../services/usersService.js';
+import { fetchAllUsers, fetchUserById, addUser, updateUser as updateUserById, deleteUser as deleteUserById } from '../services/usersService.js';
 
 const getAllUsers = async (req: Request, res: Response) => {
-    const users = await usersService.fetchAllUsers();
+    const users = await fetchAllUsers();
     res.send(users);
 }
 
 const getUserById = async (req: Request<{ id: string }>, res: Response) => {
     const userId = req.params.id;
-    const user = await usersService.fetchUserById(userId);
+    const user = await fetchUserById(userId);
     if (user) {
         res.send(user);
     } else {
@@ -18,24 +18,24 @@ const getUserById = async (req: Request<{ id: string }>, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
     const newUser = req.body;
-    const createdUser = await usersService.addUser(newUser);
+    const createdUser = await addUser(newUser);
     res.status(201).send(createdUser);
 }
 
 const updateUser = async (req: Request<{ id: string }>, res: Response) => {
     const userId = req.params.id;
     const updatedData = req.body;
-    const updatedUser = await usersService.updateUser(userId, updatedData);
+    const updatedUser = await updateUserById(userId, updatedData);
     res.send(updatedUser);
 }
 
 const deleteUser = async (req: Request<{ id: string }>, res: Response) => {
     const userId = req.params.id;
-    const deletedUser = await usersService.deleteUser(userId);
+    const deletedUser = await deleteUserById(userId);
     res.send(deletedUser);
 }
 
-export default {
+export {
     getAllUsers,
     getUserById,
     createUser,

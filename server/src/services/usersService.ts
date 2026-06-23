@@ -38,7 +38,7 @@ const deleteUser = async (userId: string) => {
     return result.rows[0];
 }
 
-export default {
+export {
     fetchAllUsers,
     fetchUserById,
     addUser,
