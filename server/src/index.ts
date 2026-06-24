@@ -4,6 +4,7 @@ import 'dotenv/config';
 import './config/db.js';
 import usersRouter from './routes/usersRouter.js';
 import uploadRouter from './routes/uploadRouter.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.json());
 
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
-
+app.use(errorHandler);
 const PORT = Number(process.env.PORT) || 4000;
 
 app.listen(PORT, () => {

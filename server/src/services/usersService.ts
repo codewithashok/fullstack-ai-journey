@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { pool } from '../config/db.js';
 import { createUserSchema } from '../schemas/userSchema.js';
+import { AppError } from '../utils/AppError.js';
 
 type User = z.infer<typeof createUserSchema>;
 
@@ -11,6 +12,7 @@ const fetchAllUsers = async () => {
 
 const fetchUserById = async (userId: number) => {
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (!result.rows[0]) throw new AppError('User not found', 404);
     return result.rows[0];
 }
 

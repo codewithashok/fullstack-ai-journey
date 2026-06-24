@@ -9,11 +9,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getUserById = async (req: Request<{ id: string }>, res: Response) => {
     const userId = Number(req.params.id);
     const user = await fetchUserById(userId);
-    if (user) {
-        res.send(user);
-    } else {
-        res.status(404).send({ message: 'User not found' });
-    }
+    res.send(user);
 }
 
 const createUser = async (req: Request, res: Response) => {
