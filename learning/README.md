@@ -9,8 +9,8 @@ Written in simple language — like a friend explaining to another friend.
 
 | Step | Topic | File |
 |------|-------|------|
-| Step 24 | Connect Express to PostgreSQL using pg | [step-24.md](./step-24.md) |
-| Step 25 | Replace In-Memory CRUD with Real SQL | [step-25.md](./step-25.md) |
-| Step 27 | Environment Variables | [step-27.md](./step-27.md) |
-| Step 28 | Global Error Handling | [step-28.md](./step-28.md) |
-| Step 30 | Async Error Wrapper | [step-30.md](./step-30.md) |
+| Step 22 | Connect Express to PostgreSQL using pg | [step-22.md](./step-22.md) |
+| Step 23 | Replace In-Memory CRUD with Real SQL | [step-23.md](./step-23.md) |
+| Step 24 | Environment Variables | [step-24.md](./step-24.md) |
+| Step 25 | Global Error Handling + asyncHandler | [step-25.md](./step-25.md) |
+| Step 26 | DTO Pattern & Strong Typing | [step-26.md](./step-26.md) |

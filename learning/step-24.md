@@ -1,63 +1,90 @@
-# Step 24 — Connect Express to PostgreSQL using `pg`
+# Step 24 — Environment Variables and Config Management
 
-## What is `pg`?
+## The problem without env variables
 
-`pg` is a library that lets your Node.js code talk to a PostgreSQL database.
-Think of it as a translator — your code speaks JavaScript, PostgreSQL speaks SQL, and `pg` sits in between.
-
-```
-Your Express Code  →  pg  →  PostgreSQL Database
-```
-
----
-
-## What did I build?
-
-Created `src/config/db.ts` — a file that sets up the database connection.
+Imagine hardcoding your DB password in the code:
 
 ```ts
-import { Pool } from 'pg';
+password: '123456'
+```
 
-export const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: { rejectUnauthorized: false }
-});
+If you push this to GitHub — anyone can see your password. Bad idea.
 
-pool.query('SELECT NOW()')
-  .then(() => console.log('Database connected'))
-  .catch(error => console.error('Database connection failed', error));
+---
+
+## The solution: `.env` file
+
+Create a `.env` file and put all secrets there:
+
+```
+# Server
+PORT=4000
+
+# PostgreSQL (Local)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=123456
+DB_NAME=users_app
+
+# Cloudinary (Image Upload)
+CLOUDINARY_URL=cloudinary://...
+```
+
+Then read them in code using `process.env`:
+
+```ts
+password: process.env.DB_PASSWORD
 ```
 
 ---
 
-## Why Pool and not a single connection?
+## How does it work?
 
-A **Pool** keeps multiple connections open and reuses them.
+The `dotenv` package reads `.env` and loads everything into `process.env`.
 
-Without Pool → every API request opens and closes a new DB connection → slow.
-With Pool → connections are reused → fast.
+```ts
+import 'dotenv/config'; // add this at the top of index.ts
+```
+
+That's it. Now `process.env.DB_PASSWORD` works everywhere.
 
 ---
 
-## Why `pool.query()` instead of `pool.connect()`?
+## Golden rule: never commit `.env` to git
 
-`pool.connect()` manually grabs a connection from the pool.
-You have to remember to release it after — easy to forget.
+Add `.env` to `.gitignore`:
 
-`pool.query()` does everything automatically:
-- grabs a connection
-- runs the query
-- releases the connection
+```
+.env
+```
 
-Always prefer `pool.query()`.
+Your code goes to GitHub. Your secrets stay on your machine.
+
+---
+
+## Local vs Production
+
+| Environment | Where credentials come from |
+|-------------|----------------------------|
+| Local | `.env` file on your machine |
+| Render (production) | Environment Variables set in Render Dashboard |
+
+Same code, different values — that's the beauty of env variables.
+
+---
+
+## Port from env
+
+```ts
+const PORT = Number(process.env.PORT) || 4000;
+```
+
+- Locally → `PORT` not set → falls back to `4000`
+- On Render → Render sets `PORT` automatically → uses Render's value
 
 ---
 
 ## Key lesson
 
-Credentials (host, password, etc.) should NEVER be hardcoded.
-They come from environment variables via `.env` file.
+Never hardcode secrets. Always use `.env` locally and the hosting platform's env variables in production.
