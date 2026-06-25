@@ -9,6 +9,11 @@ const BASE_URL = import.meta.env.VITE_API_URL
 const API = `${BASE_URL}/users`
 const UPLOAD_API = `${BASE_URL}/upload`
 
+const authHeaders = () => ({
+  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+  'Content-Type': 'application/json',
+})
+
 function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     const stored = localStorage.getItem('user')
@@ -32,7 +37,7 @@ function App() {
 
   const fetchUsers = () => {
     setLoading(true)
-    fetch(API)
+    fetch(API, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setUsers(data))
       .catch(() => message.error('Failed to fetch users. Make sure the server is running.'))
@@ -84,14 +89,14 @@ function App() {
       if (editingUser) {
         await fetch(`${API}/${editingUser.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders(),
           body: JSON.stringify(payload),
         })
         message.success('User updated')
       } else {
         await fetch(API, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders(),
           body: JSON.stringify(payload),
         })
         message.success('User created')
@@ -107,7 +112,7 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${API}/${id}`, { method: 'DELETE' })
+      await fetch(`${API}/${id}`, { method: 'DELETE', headers: authHeaders() })
       message.success('User deleted')
       fetchUsers()
     } catch {
