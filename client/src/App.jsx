@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Table, Typography, Button, Modal, Form, Input, Popconfirm, Space, message, Upload } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { UploadOutlined, LogoutOutlined } from '@ant-design/icons'
 import 'antd/dist/reset.css'
+import Login from './Login.jsx'
 
 const { Title } = Typography
 const BASE_URL = import.meta.env.VITE_API_URL
@@ -9,6 +10,10 @@ const API = `${BASE_URL}/users`
 const UPLOAD_API = `${BASE_URL}/upload`
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const stored = localStorage.getItem('user')
+    return stored ? JSON.parse(stored) : null
+  })
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -16,6 +21,14 @@ function App() {
   const [saving, setSaving] = useState(false)
   const [photoUrl, setPhotoUrl] = useState(null)
   const [form] = Form.useForm()
+
+  const handleLogin = (user) => setCurrentUser(user)
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setCurrentUser(null)
+  }
 
   const fetchUsers = () => {
     setLoading(true)
@@ -26,7 +39,11 @@ function App() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { fetchUsers() }, [])
+  useEffect(() => {
+    if (currentUser) fetchUsers()
+  }, [currentUser])
+
+  if (!currentUser) return <Login onLogin={handleLogin} />
 
   const openCreateModal = () => {
     setEditingUser(null)
@@ -134,7 +151,11 @@ function App() {
     <div style={{ maxWidth: 900, margin: '40px auto', padding: '0 20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>Users</Title>
-        <Button type="primary" onClick={openCreateModal}>Add User</Button>
+        <Space>
+          <span style={{ color: '#666' }}>Hello, {currentUser.name}</span>
+          <Button type="primary" onClick={openCreateModal}>Add User</Button>
+          <Button icon={<LogoutOutlined />} onClick={handleLogout}>Logout</Button>
+        </Space>
       </div>
 
       <Table dataSource={users} columns={columns} rowKey="id" loading={loading} />
